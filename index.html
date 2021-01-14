@@ -194,14 +194,19 @@ right: 0;
 <p>
 &Star; Be root:<br/>
 <code class="code" style="vertical-align:middle"> $ su - </code><br/>
+&Star; Install sudo and Vim:<br/>
+<code class="code" style="vertical-align:middle"> $ sudo apt install sudo vim</code><br/>
 &Star; Add new user:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo adduser [username]</code><br/>
 &Star; Add an user to sudo group:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo usermod -aG sudo [username]</code><br/>
-&Star; If the user has sudo rights, this will return "root":<br/>
+&Star; switch users:<br/>
+<code class="code" style="vertical-align:middle"> $ su - [username]</code><br/>
+&Star; If the user is having sudo rights, this will return "root":<br/>
 <code class="code" style="vertical-align:middle"> $ whoami</code><br/>
-&Star; Install Vim:<br/>
-<code class="code" style="vertical-align:middle"> $ sudo apt install vim</code><br/><br/><br/>
+&Star; Exit sudo mode:<br/>
+<code class="code" style="vertical-align:middle"> $ exit</code><br/>
+<br/><br/>
 
 <br/ id="ip">
 <br/><br/>
