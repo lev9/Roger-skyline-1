@@ -162,7 +162,8 @@ right: 0;
 <h1>VM Part</h1><br/><br/>
 
 <h5>- Run a virtual machine with the Linux OS of your choice.</h5>
-<p>&Star; Install VirtualBox VM and create a new VM with debian-10.6.0-amd64-netinst.iso image.<br />
+<p>&Star; Install VirtualBox VM and create a new VM.<br/>
+&Star; Debian-10.6.0-amd64-netinst.iso image was used to figure out these directions.<br />
 &Star; A disk size of 8 GB.<br />
 &Star; Have at least one 4.2 GB partition.<br /><br/>
 <a href = "https://www.virtualbox.org">
@@ -205,16 +206,16 @@ right: 0;
 <code class="code" style="vertical-align:middle"> $ sudo usermod -aG sudo [username]</code><br/>
 &Star; switch users:<br/>
 <code class="code" style="vertical-align:middle"> $ su - [username]</code><br/>
-&Star; If the user is having sudo rights, this will return "root":<br/>
-<code class="code" style="vertical-align:middle"> $ whoami</code><br/>
-&Star; Exit sudo mode:<br/>
-<code class="code" style="vertical-align:middle"> $ exit</code><br/>
 <br/><br/>
 
 <br/ id="ip">
 <br/><br/>
 <h5>- Configure the machine to have a static IP and a Netmask in \30.</h5>
 <p>
+&Star; In VirtualBox manager, your VM &rarr; settings &rarr; network, change Attached to: [NAT] to [Bridged Adapter].<br />
+&Star; current ip info: ip a<br />
+&Star; netmask: 255 255 255 252<br />
+&Star; default gateway: ip r | grep default<br />
 &Star; Modify /etc/network/interfaces and create /etc/network/interfaces.d/enp0s3:<br />
 <code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces<br/>
 # the loopback network interface<br/>
@@ -224,7 +225,8 @@ auto enp0s3</code><br/>
 <code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces.d/enp0s3<br/>iface enp0s3 inet static<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;address [ip]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;netmask [netmask]<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway [gateway]<br/></code><br/><br/><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway [gateway]<br/></code><br/>
+&Star; sudo service networking restart<br /><br/><br/>
 
 <br/ id="ssh">
 <br/><br/>
@@ -233,7 +235,9 @@ auto enp0s3</code><br/>
 <p>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
 &Star; Change port 22 to a port between 49152 and 65535. Leave uncommented.<br />
-<code class="code" style="vertical-align:middle"> $ sudo systemctl restart ssh</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle"> $ sudo /etc/init.d/ssh restart</code><br/>
+&Star; test connect to the new port:<br />
+<code class="code" style="vertical-align:middle"> $ ssh [user]@[ip] -p [port]</code><br/><br/><br/>
 <h5>- Create a rsa key pair on the host machine.</h5>
 <p>
 &Star; On host machine:<br/>
