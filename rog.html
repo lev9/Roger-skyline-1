@@ -212,7 +212,9 @@ right: 0;
 <br/><br/>
 <h5>- Configure the machine to have a static IP and a Netmask in \30.</h5>
 <p>
-&Star; In VirtualBox manager, your VM &rarr; settings &rarr; network, change Attached to: [NAT] to [Bridged Adapter].<br />
+&Star; In VirtualBox manager, your VM &rarr; settings &rarr; network, choose a network mode suitable for your setup and needs.<br /><br/>
+<a href = "https://www.nakivo.com/blog/virtualbox-network-setting-guide"/>
+<button class="button" style="vertical-align:middle"><span>network modes</span></button></a><br/><br/>
 &Star; current ip info: ip a<br />
 &Star; netmask: 255 255 255 252<br />
 &Star; default gateway: ip r | grep default<br />
@@ -312,8 +314,8 @@ auto enp0s3</code><br/>
 &rarr; Check Fail2ban status: sudo systemctl status fail2ban<br/>
 &rarr; Display Fail2ban rules: sudo iptables -L<br/><br/><br/>
 
-&rarr; Disable/enable UFW: sudo UFW disable/enable<br/>
-&rarr; Disable UFW & reset the rules: sudo UFW reset<br/>
+&rarr; Disable/enable UFW: sudo ufw disable/enable<br/>
+&rarr; Disable UFW & reset the rules: sudo ufw reset<br/>
 &rarr; Disable/enable Fail2ban: sudo service fail2ban stop/start<br/><br/><br/>
 
 <h5>- You have to set a protection against scans on your VM&apos;s open ports.</h5>
