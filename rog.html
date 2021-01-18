@@ -350,8 +350,8 @@ task for this script once a week at 4AM and every time the machine reboots.</h5>
 <p>
 &Star; Create a script (in [user]/scripts/[filename].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
-sudo apt-get update -y >> /var/log/update.log<br/>
-sudo apt-get upgrade -y >> /var/log/update.log<br/>
+sudo apt-get update -y >> /var/log/update_script.log<br/>
+sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 </code><br/><br/>
 
 &Star;edit crontab to create a scheduled job:<br/>
@@ -359,7 +359,7 @@ sudo apt-get upgrade -y >> /var/log/update.log<br/>
 <code class="code" style="vertical-align:middle">0 4 * * 0 sudo /home/[user]scripts/[filename].sh<br/>
 @reboot sudo /home/[user]/scripts/[filename].sh</code>
 <code class="code" style="vertical-align:middle">$ sudo service cron restart</code><br/>
-<br/><br/><br/>
+<br/><br/>
 <a href = "https://crontab.guru/">
 <button class="button" style="vertical-align:middle"><span>A simple crontab editor</span></button></a><br/><br/><br/>
 </p>
@@ -380,7 +380,9 @@ if [ "$DIFF" != "" ]; then<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;echo "crontab changed." | mail -s "crontab modified." root<br/>
 fi</code><br/><br/>
 &Star; Again add a scheduled job in crontab:<br/>
-<code class="code" style="vertical-align:middle">0 0 * * * sudo /home/[user]/scripts/[filename2].sh</code><br/><br/><br/><br/><br/><br/>
+<code class="code" style="vertical-align:middle">0 0 * * * sudo /home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
+<a href = "https://www.binarytides.com/linux-mail-command-examples/">
+<button class="button" style="vertical-align:middle"><span>mail</span></button></a><br/><br/><br/>
 </p>
 <p2>
 &check;
