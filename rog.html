@@ -358,6 +358,7 @@ sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 <code class="code" style="vertical-align:middle"> $ sudo crontab -e</code><br/>
 <code class="code" style="vertical-align:middle">0 4 * * 0 sudo /home/[user]scripts/[filename].sh<br/>
 @reboot sudo /home/[user]/scripts/[filename].sh</code>
+<br/>
 <code class="code" style="vertical-align:middle">$ sudo service cron restart</code><br/>
 <br/><br/>
 <a href = "https://crontab.guru/">
@@ -395,12 +396,12 @@ fi</code><br/><br/>
 
 <h5>- Set a web server that is available on the VM&apos;s IP or a host. Set a self-signed SSL on all of your services.</h5>
 <p>
-&Star; copy your html document from host machine to ~/temp/index.html on the VM:<br/>
-<code class="code" style="vertical-align:middle">scp -P [port] [html file] [user]@[ip]:~/temp/index.html</code><br/>
+&Star; copy your html document from host machine to ~/temp/index.html on the VM (following is to be used when port forwarding):<br/>
+<code class="code" style="vertical-align:middle">scp -P [host-port] ~/[html-file] [user]@[host-ip]:~/temp/index.html</code><br/>
 &Star; copy the html file in temp to index.html:<br/>
 <code class="code" style="vertical-align:middle">sudo cp temp/index.html /var/www/html/index.html</code><br/><br/>
 &Star; Install Apache2:<br/>
-<code class="code" style="vertical-align:middle">$ sudo apt-get install Apache2</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/>
 &Star; Create Self-Signed SSL Certifiacte for Apache in Debian 10: link below.<br/><br/><br/>
 &rarr; To visit your page, type in the address bar of the browser: https://[ip].<br/>
 &rarr; Tip: If Chrome does not show your site since it&apos;s not a trusted one, Firefox probably will.<br/><br/><br/>
