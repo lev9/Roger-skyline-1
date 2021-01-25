@@ -385,7 +385,7 @@ if [ "$DIFF" != "" ]; then<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;echo "crontab was changed." | mail -s "crontab alert" root<br/>
 fi</code><br/><br/>
 &Star; again add a scheduled job in crontab:<br/>
-<code class="code" style="vertical-align:middle">0 0 * * * sudo bash/home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle">0 0 * * * sudo bash /home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
 <a href = "https://www.binarytides.com/linux-mail-command-examples/">
 <button class="button" style="vertical-align:middle"><span>mail</span></button></a><br/><br/><br/>
 <br/><br/><br/>
@@ -436,7 +436,7 @@ if [ "$DIFF" != "" ]; then<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;echo "index.html changed." | mail -s "html deployment." root<br/>
 fi</code><br/><br/>
 &Star; add a cronjob to run updater script at desired times:<br/>
-<code class="code" style="vertical-align:middle">* * * * * sudo bash/home/[user]/scripts/[filename3].sh</code><br/><br/>
+<code class="code" style="vertical-align:middle">* * * * * sudo bash /home/[user]/scripts/[filename3].sh</code><br/><br/>
 &Star; now you can just run this script to send the new version to vm once done editing your page, and the site will be automatically updated (* * * * * = every minute):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 scp -P [port] ~/index.html [user]@[ip]:~/temp/index.html</code><br/><br/><br/>
