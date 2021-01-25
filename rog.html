@@ -20,12 +20,14 @@ color: #000000;
 }
 h5 {
 padding-left: 160px;
+width: 600px;
 font-family: verdana;
 color: #162a52;
 }
 
 p {
 padding-left: 140px;
+width: 640px;
 font-family: verdana;
 color: #363636;
 font-size: 14px;
@@ -162,24 +164,24 @@ right: 0;
 <h1>VM Part</h1><br/><br/>
 
 <h5>- Run a virtual machine with the Linux OS of your choice.</h5>
-<p>&Star; Install VirtualBox VM and create a new VM.<br/>
-&Star; Debian-10.6.0-amd64-netinst.iso image was used to figure out these directions.<br />
-&Star; A disk size of 8 GB.<br />
-&Star; Have at least one 4.2 GB partition.<br /><br/>
+<p>&Star; install VirtualBox VM and create a new VM<br/>
+&Star; debian-10.6.0-amd64-netinst.iso image was used to figure out these directions<br />
+&Star; a disk size of 8 GB<br />
+&Star; have at least one 4.2 GB partition. For example, 4.2 for / (root) and then some swap space<br /><br/>
 <a href = "https://www.virtualbox.org">
 <button class="button" style="vertical-align:middle"><span>Get VirtualBox </span></button></a>
 <a href = "https://www.debian.org/CD/netinst/index.en.html">
 <button class="button" style="vertical-align:middle"><span>Get Debian</span></button></a>
 <a href = "https://medium.com/platform-engineer/how-to-install-debian-linux-on-virtualbox-with-guest-additions-778afa0ee7e0">
 <button class="button" style="vertical-align:middle"><span>How to install VM</span></button></a>
-<a href = "">
-<button class="button" style="vertical-align:middle"><span>partitioning</span></button></a>
 <br/><br/><br/>
-&Star; Get the info on the newest version of the packages:<br />
-<code class="code" style="vertical-align:middle"> $ sudo apt update</code><br/>
-&Star; Upgrade to the these newest versions:<br />
-<code class="code" style="vertical-align:middle"> $ sudo apt upgrade</code>
-<br/><br/>
+&Star; be root:<br/>
+<code class="code" style="vertical-align:middle"> $ su - </code><br/>
+&Star; get the info on the newest version of the packages:<br />
+<code class="code" style="vertical-align:middle"> $ apt-get update -y </code><br/>
+&Star; upgrade to the these newest versions:<br />
+<code class="code" style="vertical-align:middle"> $ apt-get upgrade -y </code>
+<br/><br/><br/>
 </p>
 
 <br/><br/><br/>
@@ -196,14 +198,10 @@ right: 0;
 
 <h5>- Create a non-root user to connect to the machine and work. Use sudo, with this user, to be able to perform operation requiring special rights.</h5>
 <p>
-&Star; Be root:<br/>
-<code class="code" style="vertical-align:middle"> $ su - </code><br/>
-&Star; Install sudo and Vim:<br/>
-<code class="code" style="vertical-align:middle"> $ sudo apt install sudo vim</code><br/>
-&Star; Add new user:<br/>
-<code class="code" style="vertical-align:middle"> $ sudo adduser [username]</code><br/>
-&Star; Add an user to sudo group:<br/>
-<code class="code" style="vertical-align:middle"> $ sudo usermod -aG sudo [username]</code><br/>
+&Star; install sudo and Vim:<br/>
+<code class="code" style="vertical-align:middle"> $ apt-get install sudo vim</code><br/>
+&Star; edit /etc/sudoers, below # User privilege specification and root info:<br/>
+<code class="code" style="vertical-align:middle"> [username] ALL=(ALL:ALL) ALL </code><br/>
 &Star; switch users:<br/>
 <code class="code" style="vertical-align:middle"> $ su - [username]</code><br/>
 <br/><br/>
@@ -212,13 +210,12 @@ right: 0;
 <br/><br/>
 <h5>- Configure the machine to have a static IP and a Netmask in \30.</h5>
 <p>
-&Star; In VirtualBox manager, your VM &rarr; settings &rarr; network, choose a network mode suitable for your setup and needs.<br /><br/>
+&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, choose a network mode suitable for your setup <br /><br/>
 <a href = "https://www.nakivo.com/blog/virtualbox-network-setting-guide"/>
 <button class="button" style="vertical-align:middle"><span>network modes</span></button></a><br/><br/>
-&Star; current ip info: ip a<br />
 &Star; netmask: 255 255 255 252<br />
 &Star; default gateway: ip r | grep default<br />
-&Star; Modify /etc/network/interfaces and create /etc/network/interfaces.d/enp0s3:<br />
+&Star; modify /etc/network/interfaces and create /etc/network/interfaces.d/enp0s3:<br />
 <code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces<br/>
 # the loopback network interface<br/>
 auto lo<br/>iface lo inet loopback<br/><br/>
@@ -228,6 +225,7 @@ auto enp0s3</code><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;address [ip]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;netmask [netmask]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway [gateway]<br/></code><br/>
+&Star; check results: ip a<br />
 &Star; sudo service networking restart<br /><br/><br/>
 
 <br/ id="ssh">
@@ -236,44 +234,44 @@ auto enp0s3</code><br/>
 <h5>- Change the default port of the SSH service by the one of your choice.</h5>
 <p>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
-&Star; Change port 22 to a port between 49152 and 65535. Leave uncommented.<br />
+&Star; change port 22 to a port between 49152 and 65535. Leave uncommented<br />
 <code class="code" style="vertical-align:middle"> $ sudo /etc/init.d/ssh restart</code><br/>
 &Star; test connect to the new port:<br />
 <code class="code" style="vertical-align:middle"> $ ssh [user]@[ip] -p [port]</code><br/><br/><br/>
 <h5>- Create a rsa key pair on the host machine.</h5>
 <p>
-&Star; On host machine:<br/>
+&Star; host terminal:<br/>
 <code class="code" style="vertical-align:middle"> $ ssh-keygen</code><br/>
-&Star; Send public key to the virtual machine:<br />
+&Star; send public key to the virtual machine:<br />
 <code class="code" style="vertical-align:middle"> $ ssh-copy-id [user]@[ip] -p [port]</code><br/>
-&Star; Now you can ssh to vm:<br />
+&Star; now you can ssh to VM:<br />
 <code class="code" style="vertical-align:middle"> $ ssh -p [port][user]@[ip]</code><br/><br/><br/>
 
 <h5>- Make SSH root access allowed not directly, but with a user who can be root.</h5>
 <p>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
-&Star; Change the line "#PasswordAuthentication yes" to "passwordAutenthication no". Leave uncommented.<br />
+&Star; change the line "#PasswordAuthentication yes" to "passwordAutenthication no"<br />
 <code class="code" style="vertical-align:middle"> $ sudo systemctl restart ssh</code><br/><br/><br/>
 
 <br/ id="firewall">
 <br/><br/>
 <h5>- Set the rules of your firewall on your server only with the services used outside the VM.</h5>
 <p>
-&Star; Set up UFW (Uncomplicated Firewall) to manage a netfilter firewall:<br /><br/><br/>
-&Star; Install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/>
-&Star; Set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default deny incoming</code><br/>
-&Star; Set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default allow outgoing</code><br/>
-&Star; Allow HTTP: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw allow 80/tcp</code><br/>
-&Star; Allow HTTPS: &nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw allow 443</code><br/>
-&Star; Allow sh port: <code class="code" style="vertical-align:middle"> $ sudo ufw allow [port]/tcp</code><br/><br/>
-&Star; Enable: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw enable</code><br/>
-&Star; Check status:&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw status verbose</code><br/><br/><br/>
+&Star; set up UFW (Uncomplicated Firewall) to manage a netfilter firewall:<br /><br/><br/>
+&Star; install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/>
+&Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default deny incoming</code><br/>
+&Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default allow outgoing</code><br/>
+&Star; allow HTTP: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw allow 80/tcp</code><br/>
+&Star; allow HTTPS: &nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw allow 443</code><br/>
+&Star; allow ssh port: <code class="code" style="vertical-align:middle"> $ sudo ufw allow [port]/tcp</code><br/><br/>
+&Star; enable: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw enable</code><br/>
+&Star; check status:&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw status verbose</code><br/><br/><br/>
 
 <br/ id="protection">
 <br/><br/>
 <h5>- Set a DOS (Denial Of Service Attack) protection on open ports of the VM.</h5>
 <p>
-&Star; Set up Fail2Ban to secure the server against unauthorized access attempts:<br /><br/><br/>
+&Star; set up Fail2Ban to secure the server against unauthorized access attempts:<br /><br/><br/>
 <code class="code" style="vertical-align:middle"> $ sudo apt-get install fail2ban</code><br/><br/>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/fail2ban/jail.d/jail-debian.local</code><br/>
 <code class="code" style="vertical-align:middle">
@@ -306,40 +304,46 @@ auto enp0s3</code><br/>
 [Definition]<br/>
   failregex = ^<HOST> -.*"(GET|POST).*<br/>
   ignoreregex =</code><br/><br/>
-&Star; Apply settings:<br/>
+&Star; apply settings:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo ufw reload</code><br/>
 <code class="code" style="vertical-align:middle"> $ sudo service fail2ban restart</code><br/>
-&Star; Activate fail2ban:<br/>
+&Star; activate fail2ban:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo systemctl enable fail2ban</code><br/><br/><br/>
-&rarr; Check Fail2ban status: sudo systemctl status fail2ban<br/>
-&rarr; Display Fail2ban rules: sudo iptables -L<br/><br/><br/>
+&rarr; check Fail2ban status: sudo systemctl status fail2ban<br/>
+&rarr; display Fail2ban rules: sudo iptables -L<br/><br/><br/>
 
-&rarr; Disable/enable UFW: sudo ufw disable/enable<br/>
-&rarr; Disable UFW & reset the rules: sudo ufw reset<br/>
-&rarr; Disable/enable Fail2ban: sudo service fail2ban stop/start<br/><br/><br/>
+&rarr; disable/enable UFW: sudo ufw disable/enable<br/>
+&rarr; disable UFW & reset the rules: sudo ufw reset<br/>
+&rarr; disable/enable Fail2ban: sudo service fail2ban stop/start<br/><br/><br/>
 
 <h5>- You have to set a protection against scans on your VM&apos;s open ports.</h5>
 <p>
-Set up PortSentry to detect and respond to port scans:<br/><br/><br/>
+set up PortSentry to detect and respond to port scans:<br/><br/><br/>
 <code class="code" style="vertical-align:middle">$ sudo apt-get install portsentry</code><br/><br/>
-&Star; Modify /etc/default/portsentry:<br/>
+&Star; modify /etc/default/portsentry:<br/>
 <code class="code" style="vertical-align:middle">TCP_MODE="atcp"<br/>
 UDP_MODE="audp"<br/>
 </code><br/><br/>
-&Star; Modify /etc/portsentry/portsentry.conf:<br/>
+&Star; modify /etc/portsentry/portsentry.conf:<br/>
 <code class="code" style="vertical-align:middle">BLOCK_UDP="1"<br/>
 BLOCK_TCP="1"<br/>
 </code><br/><br/>
-&Star; Comment all lines that start "KILL_ROUTE" except for:<br/>
+&Star; comment all lines that start "KILL_ROUTE" except for:<br/>
 <code class="code" style="vertical-align:middle">KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"</code><br/><br/>
-&Star; Restart PortSentry:<br/>
-<code class="code" style="vertical-align:middle">sudo service portsentry restart</code><br/><br/><br/>
+&Star; restart PortSentry:<br/>
+<code class="code" style="vertical-align:middle">$ sudo service portsentry restart</code><br/><br/><br/>
 &rarr; PortSentry logs: sudo cat /var/log/syslog<br/><br/><br/>
 
 
 <h5>Stop the services you don&apos;t need for this project.</h5>
-<p>
+
 <br /><br/><br/>
+<br/><br/><br/>
+
+<p2>
+&check;
+</p2>
+<br/><br/>
 
 
 <br/ id="updating">
@@ -348,16 +352,16 @@ BLOCK_TCP="1"<br/>
 which logs the whole in a file named /var/log/update_script.log. Create a scheduled
 task for this script once a week at 4AM and every time the machine reboots.</h5>
 <p>
-&Star; Create a script (in [user]/scripts/[filename].sh):<br/>
+&Star; create a script (in [user]/scripts/[filename].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 sudo apt-get update -y >> /var/log/update_script.log<br/>
 sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 </code><br/><br/>
 
-&Star;edit crontab to create a scheduled job:<br/>
+&Star; edit crontab to create a scheduled job:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo crontab -e</code><br/>
-<code class="code" style="vertical-align:middle">0 4 * * 0 sudo /home/[user]scripts/[filename].sh<br/>
-@reboot sudo /home/[user]/scripts/[filename].sh</code>
+<code class="code" style="vertical-align:middle">0 4 * * 0 sudo bash /home/[user]/scripts/[filename].sh<br/>
+@reboot sudo bash /home/[user]/scripts/[filename].sh</code>
 <br/>
 <code class="code" style="vertical-align:middle">$ sudo service cron restart</code><br/>
 <br/><br/>
@@ -373,17 +377,18 @@ sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 <h5>- Make a script to monitor changes of the /etc/crontab file and sends an email to
 root if it has been modified. Create a scheduled script task every day at midnight.</h5>
 <p>
-&Star; Create a script (in [user]/scripts/[filename2].sh):<br/>
+&Star; create a script (in [user]/scripts/[filename2].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 DIFF=$(diff /etc/crontab.back /etc/crontab)<br/>
 cat /etc/crontab > /etc/crontab.back<br/>
 if [ "$DIFF" != "" ]; then<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab changed." | mail -s "crontab modified." root<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab was changed." | mail -s "crontab alert" root<br/>
 fi</code><br/><br/>
-&Star; Again add a scheduled job in crontab:<br/>
-<code class="code" style="vertical-align:middle">0 0 * * * sudo /home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
+&Star; again add a scheduled job in crontab:<br/>
+<code class="code" style="vertical-align:middle">0 0 * * * sudo bash/home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
 <a href = "https://www.binarytides.com/linux-mail-command-examples/">
 <button class="button" style="vertical-align:middle"><span>mail</span></button></a><br/><br/><br/>
+<br/><br/><br/>
 </p>
 <p2>
 &check;
@@ -396,17 +401,20 @@ fi</code><br/><br/>
 
 <h5>- Set a web server that is available on the VM&apos;s IP or a host. Set a self-signed SSL on all of your services.</h5>
 <p>
-&Star; copy your html document from host machine to ~/temp/index.html on the VM (following is to be used when port forwarding):<br/>
-<code class="code" style="vertical-align:middle">scp -P [host-port] ~/[html-file] [user]@[host-ip]:~/temp/index.html</code><br/>
+&Star; copy your html document from host machine to ~/temp/index.html on the VM: <br/>
+<code class="code" style="vertical-align:middle">$ scp -P [port] ~/[html-file] [user]@[ip]:~/temp/index.html</code><br/>
 &Star; copy the html file in temp to index.html:<br/>
-<code class="code" style="vertical-align:middle">sudo cp temp/index.html /var/www/html/index.html</code><br/><br/>
-&Star; Install Apache2:<br/>
+<code class="code" style="vertical-align:middle">$ sudo cp temp/index.html /var/www/html/index.html</code><br/><br/>
+&Star; install Apache2:<br/>
 <code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/>
-&Star; Create Self-Signed SSL Certifiacte for Apache in Debian 10: link below.<br/><br/><br/>
-&rarr; To visit your page, type in the address bar of the browser: https://[ip].<br/>
-&rarr; Tip: If Chrome does not show your site since it&apos;s not a trusted one, Firefox probably will.<br/><br/><br/>
+&Star; create Self-Signed SSL Certifiacte for Apache in Debian 10: link below.<br/><br/><br/>
+&rarr; to visit your page, type in the address bar of the browser: https://[ip]<br/>
+&rarr; tip: If Chrome does not show your site since it&apos;s not a trusted one, Firefox probably will<br/><br/><br/>
+<a href = "https://www.w3schools.com/html/">
+<button class="button" style="vertical-align:middle"><span> HTML tutorial </span></button></a>
 <a href = "https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-debian-10">
 <button class="button" style="vertical-align:middle"><span>How to SSL</span></button></a><br/><br/><br/>
+<br/><br/><br/>
 </p>
 <p2>
 &check;
@@ -420,26 +428,30 @@ fi</code><br/><br/>
 
 <h5>- A functional solution for deployment automation:</h5>
 <p>
-&Star; Create a script in [user]/scripts/[filename 3].sh that will compare temp/index.html to /var/www/html/index.html and update if changes have been made:<br/>
+&Star; create a script in [user]/scripts/[filename 3].sh that will compare temp/index.html to /var/www/html/index.html and update if changes have been made:<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 DIFF=$(diff /home/[user]/temp/index.html /var/www/html/index.html)<br/>
 if [ "$DIFF" != "" ]; then<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;sudo cp /home/[user]/temp/index.html /var/www/html/index.html<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;echo "index.html changed." | mail -s "Deployment done." root<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "index.html changed." | mail -s "html deployment." root<br/>
 fi</code><br/><br/>
-&Star; Add a cronjob to run update script at desired times:<br/>
-<code class="code" style="vertical-align:middle">* * * * * sudo /home/[user]/scripts/[filename3].sh</code><br/><br/>
-&Star; Now you can just run this script to send the new version to vm once done editing your page, and the site will be automatically updated (* * * * * = every minute):<br/>
+&Star; add a cronjob to run updater script at desired times:<br/>
+<code class="code" style="vertical-align:middle">* * * * * sudo bash/home/[user]/scripts/[filename3].sh</code><br/><br/>
+&Star; now you can just run this script to send the new version to vm once done editing your page, and the site will be automatically updated (* * * * * = every minute):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
-scp -P [port] index.html [user]@[ip]:~/temp/index.html</code><br/><br/>
+scp -P [port] ~/index.html [user]@[ip]:~/temp/index.html</code><br/><br/><br/>
 </p>
+
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
+<p>
+&Star; get checksum of your VM in host terminal/VirtualBox VMs/your VM: <br/>
+<code class="code" style="vertical-align:middle">$ shasum < [your VM].vdi </code><br/>
+</p>
+
 <h3>Done!</h3>
-<p2>
-&check;
-</p2>
 <br/><br/><br/>
-<p2>
 <p>&nbsp;</p>
 </font><br />
 </body>
