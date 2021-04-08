@@ -178,7 +178,7 @@ right: 0;
 
 <h5>- Run a virtual machine with the Linux OS of your choice.</h5>
 <p>&Star; install VirtualBox VM and create a new VM<br/>
-&Star; debian-10.6.0-amd64-netinst.iso image was used to figure out these directions<br />
+&Star; debian-10.6.0-amd64-netinst.iso image was used to figure out these directions (on MacBook Air (Retina) + Wi-Fi connection)<br />
 &Star; a disk size of 8 GB<br />
 &Star; have at least one 4.2 GB partition. For example, 4.2 for / (root) and then some swap space<br /><br/>
 <a href = "https://www.virtualbox.org">
@@ -213,32 +213,46 @@ right: 0;
 <p>
 &Star; install sudo and Vim:<br/>
 <code class="code" style="vertical-align:middle"> $ apt-get install sudo vim</code><br/>
-&Star; edit /etc/sudoers, below # User privilege specification and root info:<br/>
+&Star; make /etc/sudoers writable with chmod +w and add below # User privilege specification and root info:<br/>
 <code class="code" style="vertical-align:middle"> [username] ALL=(ALL:ALL) ALL </code><br/>
 &Star; switch users:<br/>
 <code class="code" style="vertical-align:middle"> $ su - [username]</code><br/>
 <br/><br/>
 
+
+
+
+
+
 <br/ id="ip">
 <br/><br/>
 <h5>- Configure the machine to have a static IP and a Netmask in \30.</h5>
 <p>
-&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, choose a network mode suitable for your setup <br /><br/>
+&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, choose a network mode suitable for your setup (recommend trying Bridged Adapter)<br /><br/>
+
+
 <a href = "https://www.nakivo.com/blog/virtualbox-network-setting-guide"/>
 <button class="button" style="vertical-align:middle"><span>network modes</span></button></a><br/><br/>
-&Star; netmask: 255.255.255.252<br />
-&Star; default gateway: ip r | grep default<br />
-&Star; modify /etc/network/interfaces and create /etc/network/interfaces.d/enp0s3:<br />
-<code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces<br/>
-# the loopback network interface<br/>
-auto lo<br/>iface lo inet loopback<br/><br/>
+
+
+&Star; you can apt-get install net-tools to check your interface configuration with sudo ifconfig<br />
+&Star; modify /etc/network/interfaces:<br />
+<code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces<br/><br/>
+# This file describes the network interfaces available on your system<br/>
+# and how to activate them. For more information, see interfaces(5).<br/><br/>
+source /etc/network/interfaces.d/*<br/><br/>
+# The loopback network interface<br/>
+auto lo<br/>iface lo inet loopback<br/><br/><br/>
 # The primary network interface<br/>
 auto enp0s3</code><br/>
-<code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces.d/enp0s3<br/>iface enp0s3 inet static<br/>
+&Star; create the following file: <br />
+&Star; netmask: 255.255.255.252<br />
+&Star; default gateway: ip r | grep default<br />
+<code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces.d/enp0s3<br/><br/>iface enp0s3 inet static<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;address [ip]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;netmask [netmask]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway [gateway]<br/></code><br/>
-&Star; check results: ip a<br />
+&Star; check results: sudo ifconfig<br />
 &Star; sudo service networking restart<br /><br/><br/>
 
 <br/ id="ssh">
@@ -248,28 +262,34 @@ auto enp0s3</code><br/>
 <p>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
 &Star; change port 22 to a port between 49152 and 65535. Leave uncommented<br />
-<code class="code" style="vertical-align:middle"> $ sudo /etc/init.d/ssh restart</code><br/>
+<code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/>
 &Star; test connect to the new port:<br />
-<code class="code" style="vertical-align:middle"> $ ssh [user]@[ip] -p [port]</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/>
+&Star; close the connection:<br />
+<code class="code" style="vertical-align:middle"> $ exit</code><br/><br/><br/>
+
+
+
 <h5>- Create a rsa key pair on the host machine.</h5>
 <p>
-&Star; host terminal:<br/>
-<code class="code" style="vertical-align:middle"> $ ssh-keygen</code><br/>
+&Star; in host terminal:<br/>
+<code class="code" style="vertical-align:middle"> $ ssh-keygen -t rsa</code><br/>
 &Star; send public key to the virtual machine:<br />
-<code class="code" style="vertical-align:middle"> $ ssh-copy-id [user]@[ip] -p [port]</code><br/>
+<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/[id_rsa].pub [user]@[ip] -p [port]</code><br/>
 &Star; now you can ssh to VM:<br />
-<code class="code" style="vertical-align:middle"> $ ssh -p [port][user]@[ip]</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/><br/><br/>
 
 <h5>- Make SSH root access allowed not directly, but with a user who can be root.</h5>
 <p>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
 &Star; change the line "#PasswordAuthentication yes" to "passwordAutenthication no"<br />
-<code class="code" style="vertical-align:middle"> $ sudo systemctl restart ssh</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/><br/><br/>
 
 <br/ id="firewall">
 <br/><br/>
 <h5>- Set the rules of your firewall on your server only with the services used outside the VM.</h5>
 <p>
+&Star; at this point I had to change the network mode back to NAT<br />
 &Star; set up UFW (Uncomplicated Firewall) to manage a netfilter firewall:<br /><br/><br/>
 &Star; install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/>
 &Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default deny incoming</code><br/>
@@ -344,15 +364,19 @@ BLOCK_TCP="1"<br/>
 &Star; comment all lines that start "KILL_ROUTE" except for:<br/>
 <code class="code" style="vertical-align:middle">KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"</code><br/><br/>
 &Star; restart PortSentry:<br/>
-<code class="code" style="vertical-align:middle">$ sudo service portsentry restart</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo /etc/init.d/portsentry start</code><br/><br/><br/>
 &rarr; PortSentry logs: sudo cat /var/log/syslog<br/><br/><br/>
 
 
 <h5>- Stop the services you don&apos;t need for this project.</h5>
-
+<p>
+&Star; display all services:<br/>
+<code class="code" style="vertical-align:middle">$ ls /etc/init.d</code><br/><br/>
+&Star; disable the unneeded ones:<br/>
+<code class="code" style="vertical-align:middle">$ sudo systemctl disable bluetooth.service</code><br/><br/>
 <br /><br/><br/>
 <br/><br/><br/>
-
+</p>
 <p2>
 &check;
 </p2>
@@ -399,8 +423,40 @@ if [ "$DIFF" != "" ]; then<br/>
 fi</code><br/><br/>
 &Star; again add a scheduled job in crontab:<br/>
 <code class="code" style="vertical-align:middle">0 0 * * * sudo bash /home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
-<a href = "https://www.binarytides.com/linux-mail-command-examples/">
-<button class="button" style="vertical-align:middle"><span>mail</span></button></a><br/><br/><br/>
+
+<p>
+Set up & test mail:<br/><br/><br/>
+
+
+<code class="code" style="vertical-align:middle">$ sudo apt install bsd-mailx</code><br/>
+<code class="code" style="vertical-align:middle">$ sudo apt install postfix</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ cat /etc/aliases<br/><br/>
+root: root</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo newaliases</code><br/>
+<code class="code" style="vertical-align:middle">$ sudo postconf -e "home_mailbox = mail/"</code><br/>
+<code class="code" style="vertical-align:middle">$ sudo service postfix restart</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo apt install mutt</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ cat .muttrc<br/><br/>
+set mbox_type=Maildir<br/>
+set folder="/root/mail"<br/>
+set mask="!^\\.[^.]"<br/>
+set mbox="/root/mail"<br/>
+set record="+.Sent"<br/>
+set postponed="+.Drafts"<br/>
+set spoolfile="/root/mail"</code><br/>
+<code class="code" style="vertical-align:middle">$ mutt</code><br/>
+<code class="code" style="vertical-align:middle">$ q</code><br/>
+<code class="code" style="vertical-align:middle">$ echo "hey root" | sudo mail -s "testing" root@[host].[domain]</code><br/>
+<code class="code" style="vertical-align:middle">$ su - root</code><br/>
+<code class="code" style="vertical-align:middle">$ mutt</code><br/>
+
+
+
+
+
+
+
+
 <br/><br/><br/>
 </p>
 <p2>
