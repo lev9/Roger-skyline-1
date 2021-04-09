@@ -389,7 +389,7 @@ BLOCK_TCP="1"<br/>
 which logs the whole in a file named /var/log/update_script.log. Create a scheduled
 task for this script once a week at 4AM and every time the machine reboots.</h5>
 <p>
-&Star; create a script (in [user]/scripts/[filename].sh):<br/>
+&Star; create a script (in [user]/scripts/[updater_filename].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 sudo apt-get update -y >> /var/log/update_script.log<br/>
 sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
@@ -397,8 +397,8 @@ sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 
 &Star; edit crontab to create a scheduled job:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo crontab -e</code><br/>
-<code class="code" style="vertical-align:middle">0 4 * * 0 sudo bash /home/[user]/scripts/[filename].sh<br/>
-@reboot sudo bash /home/[user]/scripts/[filename].sh</code>
+<code class="code" style="vertical-align:middle">0 4 * * 0 sudo bash /home/[user]/scripts/[updater_filename].sh<br/>
+@reboot sudo bash /home/[user]/scripts/[updater_filename].sh</code>
 <br/>
 <code class="code" style="vertical-align:middle">$ sudo service cron restart</code><br/>
 <br/><br/>
@@ -414,15 +414,15 @@ sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 <h5>- Make a script to monitor changes of the /etc/crontab file and sends an email to
 root if it has been modified. Create a scheduled script task every day at midnight.</h5>
 <p>
-&Star; create a script (in [user]/scripts/[filename2].sh):<br/>
+&Star; create a script (in [user]/scripts/[cron_monitor_filename].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 DIFF=$(diff /etc/crontab.back /etc/crontab)<br/>
 cat /etc/crontab > /etc/crontab.back<br/>
 if [ "$DIFF" != "" ]; then<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab was changed." | mail -s "crontab alert" root<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab has been changed." | sudo mail -s "crontab alert" root@[host].[domain]<br/>
 fi</code><br/><br/>
 &Star; again add a scheduled job in crontab:<br/>
-<code class="code" style="vertical-align:middle">0 0 * * * sudo bash /home/[user]/scripts/[filename2].sh</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle">0 0 * * * sudo bash /home/[user]/scripts/[cron_monitor_filename].sh</code><br/><br/><br/>
 
 <p>
 Set up & test mail:<br/><br/><br/>
@@ -475,8 +475,54 @@ set spoolfile="/root/mail"</code><br/>
 &Star; copy the html file in temp to index.html:<br/>
 <code class="code" style="vertical-align:middle">$ sudo cp temp/index.html /var/www/html/index.html</code><br/><br/>
 &Star; install Apache2:<br/>
-<code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/>
-&Star; create Self-Signed SSL Certifiacte for Apache in Debian 10: link below.<br/><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/><br/>
+Create Self-Signed SSL Certifiacte for Apache in Debian 10: <br/><br/>
+
+<code class="code" style="vertical-align:middle">$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt</code><br/><br/>
+<code class="code" style="vertical-align:middle">Common Name: [ip]<br/>
+Email Address: root@[host].[domain]
+</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ cat /etc/apache2/conf-available/ssl-params.conf<br/><br/>
+SSLCipherSuite EECDH+AESGCM:EDH+AESGCM:AES256+EECDH:AES256+EDH<br/>
+SSLProtocol All -SSLv2 -SSLv3<br/>
+SSLHonorCipherOrder On<br/><br/>
+
+Header always set X-Frame-Options DENY<br/>
+Header always set X-Content-Type-Options nosniff<br/><br/>
+
+SSLCompression off<br/>
+SSLSessionTickets Off<br/>
+SSLUseStapling on<br/>
+SSLStaplingCache "shmcb:logs/stapling-cache(150000)"</code><br/><br/>
+
+
+&Star; in /etc/apache2/sites-available/default-ssl.conf:<br/>
+<code class="code" style="vertical-align:middle">
+		ServerAdmin root@localhost<br/>
+		ServerName [ip]<br/>
+		DocumentRoot /var/www/html<br/>
+		ErrorLog ${APACHE_LOG_DIR}/error.log<br/>
+		CustomLog ${APACHE_LOG_DIR}/access.log combined<br/>
+		SSLEngine on<br/>
+		SSLCertificateFile	/etc/ssl/certs/apache-selfsigned.crt<br/>
+		SSLCertificateKeyFile /etc/ssl/private/apache-selfsigned.key<br/>
+</code><br/><br/>
+
+
+&Star; in /etc/apache2/sites-available/000-default.conf:<br/>
+<code class="code" style="vertical-align:middle">
+Redirect "/" "https://[ip]/"
+</code><br/><br/>
+
+<code class="code" style="vertical-align:middle">
+$ sudo a2enmod ssl<br/>
+$ sudo a2enmod headers<br/>
+$ sudo a2ensite default-ssl<br/>
+$ sudo a2enconf ssl-params<br/>
+$ sudo apache2ctl configtest<br/>
+$ sudo systemctl restart apache2<br/>
+</code><br/><br/>
+
 &rarr; to visit your page, type in the address bar of the browser: https://[ip]<br/>
 &rarr; tip: If Chrome does not show your site since it&apos;s not a trusted one, Firefox probably will<br/><br/><br/>
 <a href = "https://www.w3schools.com/html/">
@@ -497,15 +543,15 @@ set spoolfile="/root/mail"</code><br/>
 
 <h5>- A functional solution for deployment automation:</h5>
 <p>
-&Star; create a script in [user]/scripts/[filename 3].sh that will compare temp/index.html to /var/www/html/index.html and update if changes have been made:<br/>
+&Star; create a script in [user]/scripts/[html_updater_filename].sh that will compare temp/index.html to /var/www/html/index.html and update if changes have been made:<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 DIFF=$(diff /home/[user]/temp/index.html /var/www/html/index.html)<br/>
 if [ "$DIFF" != "" ]; then<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;sudo cp /home/[user]/temp/index.html /var/www/html/index.html<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;echo "index.html changed." | mail -s "html deployment." root<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "index.html has been changed." | sudo mail -s "html updated." root@[host].[domain]<br/>
 fi</code><br/><br/>
 &Star; add a cronjob to run updater script at desired times:<br/>
-<code class="code" style="vertical-align:middle">* * * * * sudo bash /home/[user]/scripts/[filename3].sh</code><br/><br/>
+<code class="code" style="vertical-align:middle">* * * * * sudo bash /home/[user]/scripts/[html_updater_filename].sh</code><br/><br/>
 &Star; now you can just run this script to send the new version to vm once done editing your page, and the site will be automatically updated (* * * * * = every minute):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
 scp -P [port] ~/index.html [user]@[ip]:~/temp/index.html</code><br/><br/><br/>
