@@ -213,8 +213,17 @@ right: 0;
 <p>
 &Star; install sudo and Vim:<br/>
 <code class="code" style="vertical-align:middle"> $ apt-get install sudo vim</code><br/>
-&Star; make /etc/sudoers writable with chmod +w and add below # User privilege specification and root info:<br/>
-<code class="code" style="vertical-align:middle"> [username] ALL=(ALL:ALL) ALL </code><br/>
+&Star; an user was created during the VM installation, but if you want to create another one:<br/>
+<code class="code" style="vertical-align:middle"> $ adduser [newname]</code><br/>
+&Star; you will be asked for a new password and some other info for the new user.<br/>
+&Star; then, to add the new user to sudoers group:<br/>
+<code class="code" style="vertical-align:middle"> $ usermod -aG sudo [newname]</code><br/>
+&Star; check who is in the sudo group:<br/>
+<code class="code" style="vertical-align:middle"> $ getent group sudo</code><br/>
+&Star; delete an user:<br/>
+<code class="code" style="vertical-align:middle"> $ deluser [username]</code><br/>
+
+
 &Star; switch users:<br/>
 <code class="code" style="vertical-align:middle"> $ su - [username]</code><br/>
 <br/><br/>
@@ -270,12 +279,13 @@ auto enp0s3</code><br/>
 
 
 
-<h5>- Create a rsa key pair on the host machine.</h5>
+<h5>- Create an rsa key pair on the host machine.</h5>
 <p>
+&Star; in /etc/ssh/sshd_config, make sure you have set "#PasswordAuthentication yes" and "PubkeyAutenthication yes"<br />
 &Star; in host terminal:<br/>
 <code class="code" style="vertical-align:middle"> $ ssh-keygen -t rsa</code><br/>
 &Star; send public key to the virtual machine:<br />
-<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/[id_rsa].pub [user]@[ip] -p [port]</code><br/>
+<code class="code" style="vertical-align:middle"> $ ssh-copy-id [user]@[ip] -p [port]</code><br/>
 &Star; now you can ssh to VM:<br />
 <code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/><br/><br/>
 
@@ -283,7 +293,8 @@ auto enp0s3</code><br/>
 <p>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
 &Star; change the line "#PasswordAuthentication yes" to "passwordAutenthication no"<br />
-<code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/><br/><br/>
+<code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/>
+&Star; now you should be able to ssh to an non-root user from host without using password<br /><br/><br/>
 
 <br/ id="firewall">
 <br/><br/>
