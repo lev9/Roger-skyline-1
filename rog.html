@@ -194,6 +194,7 @@ right: 0;
 <code class="code" style="vertical-align:middle"> $ apt-get update -y </code><br/>
 &Star; upgrade to the these newest versions:<br />
 <code class="code" style="vertical-align:middle"> $ apt-get upgrade -y </code>
+<br/><br/>
 <br/><br/><br/>
 </p>
 
@@ -285,7 +286,7 @@ auto enp0s3</code><br/>
 &Star; in host terminal:<br/>
 <code class="code" style="vertical-align:middle"> $ ssh-keygen -t rsa</code><br/>
 &Star; send public key to the virtual machine:<br />
-<code class="code" style="vertical-align:middle"> $ ssh-copy-id [user]@[ip] -p [port]</code><br/>
+<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/[new_key_name].pub [user]@[ip] -p [port]</code><br/>
 &Star; now you can ssh to VM:<br />
 <code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/><br/><br/>
 
@@ -295,6 +296,15 @@ auto enp0s3</code><br/>
 &Star; change the line "#PasswordAuthentication yes" to "passwordAutenthication no"<br />
 <code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/>
 &Star; now you should be able to ssh to an non-root user from host without using password<br /><br/><br/>
+&Star; note: for me it seemed here like only a key named id_rsa was tried to be used, to add a different key to action I had to, on host terminal:<br />
+<code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/ssh_config</code><br/>
+&Star; add this line:<br />
+<code class="code" style="vertical-align:middle">IdentityFile ~/.ssh/[new_key]</code><br/>
+&Star; and to restart ssh on a mac:<br />
+<code class="code" style="vertical-align:middle"> $ sudo launchctl start com.openssh.sshd</code><br/>
+
+
+<br/><br/>
 
 <br/ id="firewall">
 <br/><br/>
@@ -353,12 +363,12 @@ auto enp0s3</code><br/>
 <code class="code" style="vertical-align:middle"> $ sudo service fail2ban restart</code><br/>
 &Star; activate fail2ban:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo systemctl enable fail2ban</code><br/><br/><br/>
-&rarr; check Fail2ban status: sudo systemctl status fail2ban<br/>
-&rarr; display Fail2ban rules: sudo iptables -L<br/><br/><br/>
+&rarr; to check Fail2ban status: sudo systemctl status fail2ban<br/>
+&rarr; to display Fail2ban rules: sudo iptables -L<br/><br/><br/>
 
-&rarr; disable/enable UFW: sudo ufw disable/enable<br/>
-&rarr; disable UFW & reset the rules: sudo ufw reset<br/>
-&rarr; disable/enable Fail2ban: sudo service fail2ban stop/start<br/><br/><br/>
+&rarr; to disable/enable UFW: sudo ufw disable/enable<br/>
+&rarr; to disable UFW & reset the rules: sudo ufw reset<br/>
+&rarr; to disable/enable Fail2ban: sudo service fail2ban stop/start<br/><br/><br/>
 
 <h5>- You have to set a protection against scans on your VM&apos;s open ports.</h5>
 <p>
@@ -540,7 +550,8 @@ $ sudo systemctl restart apache2<br/>
 <a href = "https://www.w3schools.com/html/">
 <button class="button" style="vertical-align:middle"><span> HTML tutorial </span></button></a>
 <a href = "https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-debian-10">
-<button class="button" style="vertical-align:middle"><span>how to SSL</span></button></a><br/><br/><br/>
+<button class="button" style="vertical-align:middle"><span>how to SSL</span></button></a><br/><br/>
+<br/><br/><br/>
 <br/><br/><br/>
 </p>
 <p2>
