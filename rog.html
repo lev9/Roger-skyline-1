@@ -288,10 +288,12 @@ auto enp0s3</code><br/>
 &Star; in /etc/ssh/sshd_config, make sure you have set "#PasswordAuthentication yes" and "PubkeyAutenthication yes"<br />
 &Star; in host terminal:<br/>
 <code class="code" style="vertical-align:middle"> $ ssh-keygen -t rsa</code><br/>
+&Star; come up with a new filename if default id_rsa is already in use<br/>
 &Star; send public key to the virtual machine:<br />
 <code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/[new_key_name].pub [user]@[ip] -p [port]</code><br/>
-&Star; now you can ssh to VM:<br />
-<code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/><br/><br/>
+&Star; now you can ssh to VM from host:<br />
+<code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/>
+<code class="code" style="vertical-align:middle"> $ exit</code><br/><br/><br/>
 
 <h5>- Make SSH root access allowed not directly, but with a user who can be root.</h5>
 <p>
@@ -315,12 +317,12 @@ auto enp0s3</code><br/>
 <p>
 &Star; at this point I had to change the network mode back to NAT<br />
 &Star; set up UFW (Uncomplicated Firewall) to manage a netfilter firewall:<br /><br/><br/>
-&Star; install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/>
+&Star; install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/><br/>
 &Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default deny incoming</code><br/>
 &Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default allow outgoing</code><br/>
 &Star; allow HTTP: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw allow 80/tcp</code><br/>
 &Star; allow HTTPS: &nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw allow 443</code><br/>
-&Star; allow ssh port: <code class="code" style="vertical-align:middle"> $ sudo ufw allow [port]/tcp</code><br/><br/>
+&Star; allow ssh port: <code class="code" style="vertical-align:middle"> $ sudo ufw allow [port]/tcp</code><br/><br/><br/>
 &Star; enable: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw enable</code><br/>
 &Star; check status:&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw status verbose</code><br/><br/><br/>
 
@@ -329,7 +331,7 @@ auto enp0s3</code><br/>
 <h5>- Set a DOS (Denial Of Service Attack) protection on open ports of the VM.</h5>
 <p>
 &Star; set up Fail2Ban to secure the server against unauthorized access attempts:<br /><br/><br/>
-<code class="code" style="vertical-align:middle"> $ sudo apt-get install fail2ban</code><br/><br/>
+<code class="code" style="vertical-align:middle"> $ sudo apt-get install fail2ban</code><br/><br/><br/>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/fail2ban/jail.d/jail-debian.local</code><br/>
 <code class="code" style="vertical-align:middle">
 [DEFAULT]<br/>
@@ -360,7 +362,7 @@ auto enp0s3</code><br/>
 <code class="code" style="vertical-align:middle">
 [Definition]<br/>
   failregex = ^<HOST> -.*"(GET|POST).*<br/>
-  ignoreregex =</code><br/><br/>
+  ignoreregex =</code><br/><br/><br/>
 &Star; apply settings:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo ufw reload</code><br/>
 <code class="code" style="vertical-align:middle"> $ sudo service fail2ban restart</code><br/>
@@ -376,7 +378,7 @@ auto enp0s3</code><br/>
 <h5>- You have to set a protection against scans on your VM&apos;s open ports.</h5>
 <p>
 set up PortSentry to detect and respond to port scans:<br/><br/><br/>
-<code class="code" style="vertical-align:middle">$ sudo apt-get install portsentry</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo apt-get install portsentry</code><br/><br/><br/>
 &Star; modify /etc/default/portsentry:<br/>
 <code class="code" style="vertical-align:middle">TCP_MODE="atcp"<br/>
 UDP_MODE="audp"<br/>
@@ -386,7 +388,7 @@ UDP_MODE="audp"<br/>
 BLOCK_TCP="1"<br/>
 </code><br/><br/>
 &Star; comment all lines that start "KILL_ROUTE" except for:<br/>
-<code class="code" style="vertical-align:middle">KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"</code><br/><br/>
+<code class="code" style="vertical-align:middle">KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"</code><br/><br/><br/>
 &Star; restart PortSentry:<br/>
 <code class="code" style="vertical-align:middle">$ sudo /etc/init.d/portsentry start</code><br/><br/><br/>
 &rarr; PortSentry logs: sudo cat /var/log/syslog<br/><br/><br/>
@@ -593,7 +595,18 @@ scp -P [port] ~/index.html [user]@[ip]:~/temp/index.html</code><br/><br/><br/>
 
 <h3>Done!</h3>
 <br/><br/><br/>
+<br/><br/><br/>
+<br/><br/><br/>
 <p>&nbsp;</p>
+<p>
+...but maybe you'd like to dig a bit deeper?&nbsp;&nbsp;&nbsp;
+<a href = "https://www.youtube.com/watch?v=fKuqYQdqRIs&ab_channel=LiveOverflow">
+<button class="button" style="vertical-align:middle"><span>sure!</span></button></a>
+</p>
+<br/><br/><br/>
+<br/><br/><br/>
+<br/><br/><br/>
+<br/><br/><br/>
 </font><br />
 </body>
 </html>
