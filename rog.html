@@ -1,48 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">
 <style>
 	
 body {
-background-color: #383737;
+padding-left: 190px;
+font-family: 'Roboto', sans-serif;
+background-color: whitesmoke;
 padding-left: 30px;
 padding-right: 80px;
 }
+
 h1 {
 font-size: 50px;
 padding-left: 190px;
-font-family: verdana;
 color: #a8a8a8;
 }
+
 h2 {
-font-size: 30px;
+font-size: 33px;
 padding-left: 190px;
-font-family: verdana;
 color: #a8a8a8;
 }
 
 h3 {
 padding-left: 400px;
-font-family: verdana;
-color: #a8a8a8;
+color: green;
 }
+
 h5 {
+font-size: 18px;
+font-weight: bolder;
 padding-left: 160px;
 width: 600px;
-font-family: verdana;
-color: #c9c295;
+color: #807b5d;
 }
 
 p {
 padding-left: 140px;
 width: 640px;
-font-family: verdana;
 color: #0d0b01;
-font-size: 13px;
+font-size: 14px;
+line-height: 1.5;
 }
+
 p2 {
 padding-left: 600px;
-font-family: verdana;
 color: #34a352;
 font-size: 20px;
 }
@@ -57,8 +62,9 @@ padding: 0;
 width: 110px;
 height: 400px; 
 list-style-type: none;
-background-color: #0a0904;
+background-color: #01081c;
 }
+
 ul2 {
 top: 40px;
 left: 18px;
@@ -68,27 +74,30 @@ padding: 10;
 width: 80px;
 height: 40px; 
 list-style-type: none;
-background-color: #383737;
+background-color: #whitesmoke;
 }
+
 li a {
-font-family: verdana;
-font-size: 11px;
+font-size: 12px;
 display: block;
 color: #a8a8a8;
 padding: 8px 16px;
 text-decoration: none;
+font-weight: bolder;
 }
+
 li a:hover {
-background-color: #1c1a11;
-color: #a8a8a8;
+background-color: #855959;
+color: white;
 }
 
 .code {
+font-family: 'Cutive Mono', monospace;
 display: inline-block;
 border-radius: 4px;
 background-color: #000a06;
 border: none;
-color: #a8a8a8;
+color: #cffc03;
 text-align: left;
 font-size: 13px;
 padding: 7px;
@@ -170,7 +179,6 @@ right: 0;
 </ul>
 
 
-<p>An introduction to system and network administration. Under construction; to be read critically; the steps to be followed at ones own risk.</p>
 <br/><br/>
 <br/><br/>
 <br/><br/ id="part1"><br/>
@@ -181,9 +189,8 @@ right: 0;
 
 <h5>- Run a virtual machine with the Linux OS of your choice.</h5>
 <p>&Star; install VirtualBox VM and create a new VM<br/>
-&Star; debian-10.6.0-amd64-netinst.iso image was used to figure out these directions (on MacBook Air (Retina) + Wi-Fi connection)<br />
 &Star; a disk size of 8 GB<br />
-&Star; have at least one 4.2 GB partition. For example, 4.2 for / (root) and then some swap space<br /><br/>
+&Star; have at least one 4.2 GB partition. For example, 4.6 for /root<br /><br/>
 <a href = "https://www.virtualbox.org">
 <button class="button" style="vertical-align:middle"><span>get VirtualBox </span></button></a>
 <a href = "https://www.debian.org/CD/netinst/index.en.html">
@@ -241,12 +248,6 @@ right: 0;
 <br/><br/>
 <h5>- Configure the machine to have a static IP and a Netmask in \30.</h5>
 <p>
-&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, choose a network mode suitable for your setup (recommend trying Bridged Adapter)<br /><br/>
-
-
-<a href = "https://www.nakivo.com/blog/virtualbox-network-setting-guide"/>
-<button class="button" style="vertical-align:middle"><span>network modes</span></button></a><br/><br/>
-
 
 &Star; you can apt-get install net-tools to check your interface configuration with sudo ifconfig<br />
 &Star; modify /etc/network/interfaces:<br />
@@ -286,11 +287,11 @@ auto enp0s3</code><br/>
 <h5>- Create an rsa key pair on the host machine.</h5>
 <p>
 &Star; in /etc/ssh/sshd_config, make sure you have set "#PasswordAuthentication yes" and "PubkeyAutenthication yes"<br />
+&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, change network mode to Bridged Adapter<br /><br/>
 &Star; in host terminal:<br/>
 <code class="code" style="vertical-align:middle"> $ ssh-keygen -t rsa</code><br/>
-&Star; come up with a new filename if default id_rsa is already in use<br/>
 &Star; send public key to the virtual machine:<br />
-<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/[new_key_name].pub [user]@[ip] -p [port]</code><br/>
+<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/id_rsa.pub [user]@[ip] -p [port]</code><br/>
 &Star; now you can ssh to VM from host:<br />
 <code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/>
 <code class="code" style="vertical-align:middle"> $ exit</code><br/><br/><br/>
@@ -301,12 +302,6 @@ auto enp0s3</code><br/>
 &Star; change the line "#PasswordAuthentication yes" to "passwordAutenthication no"<br />
 <code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/>
 &Star; now you should be able to ssh to an non-root user from host without using password<br /><br/><br/>
-&Star; note: for me it seemed here like only a key named id_rsa was tried to be used, to add a different key to action I had to, on host terminal:<br />
-<code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/ssh_config</code><br/>
-&Star; add this line:<br />
-<code class="code" style="vertical-align:middle">IdentityFile ~/.ssh/[new_key]</code><br/>
-&Star; and to restart ssh on a mac:<br />
-<code class="code" style="vertical-align:middle"> $ sudo launchctl start com.openssh.sshd</code><br/>
 
 
 <br/><br/>
@@ -315,7 +310,7 @@ auto enp0s3</code><br/>
 <br/><br/>
 <h5>- Set the rules of your firewall on your server only with the services used outside the VM.</h5>
 <p>
-&Star; at this point I had to change the network mode back to NAT<br />
+&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, change network mode to NAT to be able to install, to Bridged Adapter to be able to ssh<br /><br/>
 &Star; set up UFW (Uncomplicated Firewall) to manage a netfilter firewall:<br /><br/><br/>
 &Star; install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/><br/>
 &Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default deny incoming</code><br/>
@@ -398,6 +393,8 @@ BLOCK_TCP="1"<br/>
 <p>
 &Star; display all services:<br/>
 <code class="code" style="vertical-align:middle">$ ls /etc/init.d</code><br/><br/>
+&Star; display active services (are marked with [ + ]):<br/>
+<code class="code" style="vertical-align:middle">$ sudo service --status-all</code><br/><br/>
 &Star; disable the unneeded ones:<br/>
 <code class="code" style="vertical-align:middle">$ sudo systemctl disable bluetooth.service</code><br/><br/>
 <br /><br/><br/>
@@ -462,7 +459,7 @@ root: root</code><br/><br/>
 <code class="code" style="vertical-align:middle">$ sudo postconf -e "home_mailbox = mail/"</code><br/>
 <code class="code" style="vertical-align:middle">$ sudo service postfix restart</code><br/><br/>
 <code class="code" style="vertical-align:middle">$ sudo apt install mutt</code><br/><br/>
-<code class="code" style="vertical-align:middle">$ cat .muttrc<br/><br/>
+<code class="code" style="vertical-align:middle">$ cat root/.muttrc<br/><br/>
 set mbox_type=Maildir<br/>
 set folder="/root/mail"<br/>
 set mask="!^\\.[^.]"<br/>
@@ -600,10 +597,12 @@ scp -P [port] ~/index.html [user]@[ip]:~/temp/index.html</code><br/><br/><br/>
 <p>&nbsp;</p>
 <p>
 ...but maybe you'd like to dig a bit deeper?<br/><br/><br/>
-<a href = "https://www.youtube.com/watch?v=fKuqYQdqRIs&ab_channel=LiveOverflow">
+<a href = "https://www.youtube.com/watch?v=fKuqYQdqRIs&ab_channel=LiveOverflow" target="_blank">
 <button class="button" style="vertical-align:middle"><span>sure!</span></button></a>
-<a href = "https://www.youtube.com/watch?v=xl2Xx5YOKcI&ab_channel=JohnHammond">
+<a href = "https://www.youtube.com/watch?v=xl2Xx5YOKcI&ab_channel=JohnHammond" target="_blank">
 <button class="button" style="vertical-align:middle"><span>yes!</span></button></a>
+<a href = "https://www.youtube.com/watch?v=hQ3-RN3LKvA&list=WL&index=4&ab_channel=DarkMonkeyMusic" target="_blank">
+<button class="button" style="vertical-align:middle"><span>maybe</span></button></a>
 </p>
 <br/><br/><br/>
 <br/><br/><br/>
