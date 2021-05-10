@@ -263,13 +263,18 @@ auto lo<br/>iface lo inet loopback<br/><br/><br/>
 auto enp0s3</code><br/>
 &Star; create the following file: <br />
 &Star; netmask: 255.255.255.252<br />
-&Star; default gateway: ip r | grep default<br />
+&Star; default gateway on a mac: netstat -nr | grep default<br />
 <code class="code" style="vertical-align:middle"> $ cat /etc/network/interfaces.d/enp0s3<br/><br/>iface enp0s3 inet static<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;address [ip]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;netmask [netmask]<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway [gateway]<br/></code><br/>
 &Star; check results: sudo ifconfig<br />
 &Star; sudo service networking restart<br /><br/><br/>
+<a href="https://www.calculator.net/ip-subnet-calculator.html">
+<button class="button" style="vertical-align:middle"><span>IP subnet calculator</span></button></a><br/><br/><br/>
+
+
+
 
 <br/ id="ssh">
 <br/><br/>
@@ -292,8 +297,11 @@ auto enp0s3</code><br/>
 &Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, change network mode to Bridged Adapter<br /><br/>
 &Star; in host terminal:<br/>
 <code class="code" style="vertical-align:middle"> $ ssh-keygen -t rsa</code><br/>
+&Star; if you named the keys other than the default names:<br />
+<code class="code" style="vertical-align:middle"> $ eval $(ssh-agent)</code><br/>
+<code class="code" style="vertical-align:middle"> $ ssh-add [private_key_name]</code><br/>
 &Star; send public key to the virtual machine:<br />
-<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/id_rsa.pub [user]@[ip] -p [port]</code><br/>
+<code class="code" style="vertical-align:middle"> $ ssh-copy-id -i ~/.ssh/[public_key_name] [user]@[ip] -p [port]</code><br/>
 &Star; now you can ssh to VM from host:<br />
 <code class="code" style="vertical-align:middle"> $ ssh -p [port] [user]@[ip]</code><br/>
 <code class="code" style="vertical-align:middle"> $ exit</code><br/><br/><br/>
@@ -313,6 +321,9 @@ auto enp0s3</code><br/>
 <h5>- Set the rules of your firewall on your server only with the services used outside the VM.</h5>
 <p>
 &Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, change network mode to NAT to be able to install, to Bridged Adapter to be able to ssh<br /><br/>
+&Star; install Apache2:<br/>
+<code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/><br/>
+
 &Star; set up UFW (Uncomplicated Firewall) to manage a netfilter firewall:<br /><br/><br/>
 &Star; install UFW: &nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo apt install ufw</code><br/><br/><br/>
 &Star; set default: &nbsp;&nbsp;&nbsp;<code class="code" style="vertical-align:middle"> $ sudo ufw default deny incoming</code><br/>
@@ -500,8 +511,6 @@ set spoolfile="/root/mail"</code><br/>
 <code class="code" style="vertical-align:middle">$ scp -P [port] ~/[html-file] [user]@[ip]:~/temp/index.html</code><br/>
 &Star; copy the html file in temp to index.html:<br/>
 <code class="code" style="vertical-align:middle">$ sudo cp temp/index.html /var/www/html/index.html</code><br/><br/>
-&Star; install Apache2:<br/>
-<code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/><br/>
 Create Self-Signed SSL Certifiacte for Apache in Debian 10: <br/><br/>
 
 <code class="code" style="vertical-align:middle">$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/apache-selfsigned.key -out /etc/ssl/certs/apache-selfsigned.crt</code><br/><br/>
