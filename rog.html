@@ -193,15 +193,15 @@ right: 0;
 <p>&Star; install VirtualBox VM and create a new VM<br/>
 &Star; a disk size of 8 GB<br />
 &Star; have at least one 4.2 GB partition. For example, 4.6 for /root<br /><br/>
-<a href = "https://www.virtualbox.org">
+<a href = "https://www.virtualbox.org" target="_blank">
 <button class="button" style="vertical-align:middle"><span>get VirtualBox </span></button></a>
-<a href = "https://www.debian.org/CD/netinst/index.en.html">
-<button class="button" style="vertical-align:middle"><span>get Debian</span></button></a>
-<a href = "https://medium.com/platform-engineer/how-to-install-debian-linux-on-virtualbox-with-guest-additions-778afa0ee7e0">
+<a href = "https://www.debian.org/CD/netinst/index.en.html" target="_blank">
+<button class="button" style="veirtical-align:middle"><span>get Debian</span></button></a>
+<a href = "https://medium.com/platform-engineer/how-to-install-debian-linux-on-virtualbox-with-guest-additions-778afa0ee7e0" target="_blank">
 <button class="button" style="vertical-align:middle"><span>how to install VM</span></button></a>
 <br/><br/><br/>
 &Star; be root:<br/>
-<code class="code" style="vertical-align:middle"> $ su - </code><br/>
+<code class="code" style="vertical-align:middle"> $ su</code><br/>
 &Star; get the info on the newest version of the packages:<br />
 <code class="code" style="vertical-align:middle"> $ apt-get update -y </code><br/>
 &Star; upgrade to the these newest versions:<br />
@@ -270,7 +270,7 @@ auto enp0s3</code><br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gateway [gateway]<br/></code><br/>
 &Star; check results: sudo ifconfig<br />
 &Star; sudo service networking restart<br /><br/><br/>
-<a href="https://www.calculator.net/ip-subnet-calculator.html">
+<a href="https://www.calculator.net/ip-subnet-calculator.html" target="_blank">
 <button class="button" style="vertical-align:middle"><span>IP subnet calculator</span></button></a><br/><br/><br/>
 
 
@@ -311,7 +311,8 @@ auto enp0s3</code><br/>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/ssh/sshd_config</code><br/>
 &Star; change the line "#PasswordAuthentication yes" to "passwordAutenthication no"<br />
 <code class="code" style="vertical-align:middle"> $ sudo service sshd restart</code><br/>
-&Star; now you should be able to ssh to an non-root user from host without using password<br /><br/><br/>
+&Star; now you should be able to ssh to an non-root user from host without using password<br/><br/>
+&Star; NOTE: You can skip allowing password authentication by manually copying the public key to the new users .ssh/authorized_keys file.<br /><br/><br/>
 
 
 <br/><br/>
@@ -320,7 +321,6 @@ auto enp0s3</code><br/>
 <br/><br/>
 <h5>- Set the rules of your firewall on your server only with the services used outside the VM.</h5>
 <p>
-&Star; in VirtualBox manager, your VM &rarr; settings &rarr; network, change network mode to NAT to be able to install, to Bridged Adapter to be able to ssh<br /><br/>
 &Star; install Apache2:<br/>
 <code class="code" style="vertical-align:middle">$ sudo apt-get install apache2</code><br/><br/><br/>
 
@@ -404,10 +404,8 @@ BLOCK_TCP="1"<br/>
 
 <h5>- Stop the services you don&apos;t need for this project.</h5>
 <p>
-&Star; display all services:<br/>
-<code class="code" style="vertical-align:middle">$ ls /etc/init.d</code><br/><br/>
-&Star; display active services (are marked with [ + ]):<br/>
-<code class="code" style="vertical-align:middle">$ sudo service --status-all</code><br/><br/>
+&Star; display active services:<br/>
+<code class="code" style="vertical-align:middle">$ sudo systemctl list-unit-files --state=enabled</code><br/><br/>
 &Star; disable the unneeded ones:<br/>
 <code class="code" style="vertical-align:middle">$ sudo systemctl disable bluetooth.service</code><br/><br/>
 <br /><br/><br/>
@@ -438,7 +436,7 @@ sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 <br/>
 <code class="code" style="vertical-align:middle">$ sudo service cron restart</code><br/>
 <br/><br/>
-<a href = "https://crontab.guru/">
+<a href = "https://crontab.guru/" target="_blank">
 <button class="button" style="vertical-align:middle"><span>a simple crontab editor</span></button></a><br/><br/><br/>
 </p>
 
@@ -560,9 +558,9 @@ $ sudo systemctl restart apache2<br/>
 
 &rarr; to visit your page, type in the address bar of the browser: https://[ip]<br/>
 &rarr; tip: If Chrome does not show your site since it&apos;s not a trusted one, Firefox probably will<br/><br/><br/>
-<a href = "https://www.w3schools.com/html/">
+<a href = "https://www.w3schools.com/html/" target="_blank">
 <button class="button" style="vertical-align:middle"><span> HTML tutorial </span></button></a>
-<a href = "https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-debian-10">
+<a href = "https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-apache-in-debian-10" target="_blank">
 <button class="button" style="vertical-align:middle"><span>how to SSL</span></button></a><br/><br/>
 <br/><br/><br/>
 <br/><br/><br/>
