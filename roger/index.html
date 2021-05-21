@@ -558,8 +558,7 @@ $ sudo apache2ctl configtest<br/>
 $ sudo systemctl restart apache2<br/>
 </code><br/><br/>
 
-&rarr; to visit your page, type in the address bar of the browser: https://[ip]<br/>
-&rarr; tip: If Chrome does not show your site since it&apos;s not a trusted one, Firefox probably will<br/><br/><br/>
+&rarr; to visit your page, type in the address bar of the browser: https://[ip]<br/><br>
 
 &Star; in /etc/apache2/sites-available/000-default.conf:<br/>
 <code class="code" style="vertical-align:middle">
@@ -587,18 +586,18 @@ Redirect permanent "/" "https://[ip]/"
 
 <h5>- A functional solution for deployment automation:</h5>
 <p>
-&Star; create a script in [user]/scripts/[html_updater_filename].sh that will compare temp/index.html to /var/www/html/index.html and update if changes have been made:<br/>
+&Star; create a script in [user]/scripts/[html_updater_filename].sh that will compare files in user/temp to files in /var/www/html and update if changes have been made:<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
-DIFF=$(diff /home/[user]/temp/index.html /var/www/html/index.html)<br/>
+DIFF=$(diff /home/[user]/temp /var/www/html)<br/>
 if [ "$DIFF" != "" ]; then<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;sudo cp /home/[user]/temp/index.html /var/www/html/index.html<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;echo "index.html has been changed." | sudo mail -s "html updated." root@[host].[domain]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;sudo cp -r /home/[user]/temp/* /var/www/html/<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "html has been changed." | sudo mail -s "html updated." root@[host].[domain]<br/>
 fi</code><br/><br/>
 &Star; add a cronjob to run updater script at desired times:<br/>
 <code class="code" style="vertical-align:middle">* * * * * sudo bash /home/[user]/scripts/[html_updater_filename].sh</code><br/><br/>
 &Star; now you can just run this script to send the new version to vm once done editing your page, and the site will be automatically updated (* * * * * = every minute):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
-scp -P [port] ~/index.html [user]@[ip]:~/temp/index.html</code><br/><br/><br/>
+ scp -r -P [port] ~/[my html files dir] [user]@[ip]:~/temp/</code><br/><br/><br/>
 </p>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
