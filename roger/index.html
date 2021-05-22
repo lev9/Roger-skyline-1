@@ -368,19 +368,26 @@ auto enp0s3</code><br/>
 <code class="code" style="vertical-align:middle"> $ sudo vim /etc/fail2ban/filter.d/http-get-dos.conf</code><br/>
 <code class="code" style="vertical-align:middle">
 [Definition]<br/>
-  failregex = ^<HOST> -.*"(GET|POST).*<br/>
+  failregex = ^&#60;HOST&#62; -.*"(GET|POST).*<br/>
   ignoreregex =</code><br/><br/><br/>
 &Star; apply settings:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo ufw reload</code><br/>
-<code class="code" style="vertical-align:middle"> $ sudo service fail2ban restart</code><br/>
+<code class="code" style="vertical-align:middle"> $ sudo fail2ban-client restart</code><br/>
 &Star; activate fail2ban:<br/>
 <code class="code" style="vertical-align:middle"> $ sudo systemctl enable fail2ban</code><br/><br/><br/>
-&rarr; to check Fail2ban status: sudo systemctl status fail2ban<br/>
-&rarr; to display Fail2ban rules: sudo iptables -L<br/><br/><br/>
+&rarr; to check Fail2ban status: sudo fail2ban-client status<br/>
+&rarr; status should now show 2 jails; ssh & http-get-dos<br/>
+&rarr; Fail2ban log: sudo cat /var/log/fail2ban.log<br/>
+&rarr; see banned ip's: sudo fail2ban-client status http-get-dos<br/>
+&rarr; unban: sudo fail2ban-client unban --all<br/>
+&rarr; sudo fail2ban-client restart<br/>
+&rarr; you can test fail2ban by installing Slowloris on host!<br/><br><br>
 
 &rarr; to disable/enable UFW: sudo ufw disable/enable<br/>
 &rarr; to disable UFW & reset the rules: sudo ufw reset<br/>
 &rarr; to disable/enable Fail2ban: sudo service fail2ban stop/start<br/><br/><br/>
+<a href = "https://www.digitalocean.com/community/tutorials/how-fail2ban-works-to-protect-services-on-a-linux-server" target="_blank">
+<button class="button" style="vertical-align:middle"><span>more about Fail2ban</span></button></a><br/><br/><br/>
 
 <h5>- You have to set a protection against scans on your VM&apos;s open ports.</h5>
 <p>
@@ -398,7 +405,8 @@ BLOCK_TCP="1"<br/>
 <code class="code" style="vertical-align:middle">KILL_ROUTE="/sbin/iptables -I INPUT -s $TARGET$ -j DROP"</code><br/><br/><br/>
 &Star; restart PortSentry:<br/>
 <code class="code" style="vertical-align:middle">$ sudo /etc/init.d/portsentry start</code><br/><br/><br/>
-&rarr; PortSentry logs: sudo cat /var/log/syslog<br/><br/><br/>
+&rarr; PortSentry logs: sudo cat /var/log/syslog<br/>
+&rarr; banned ip's: sudo cat /etc/hosts.deny<br/><br/><br/>
 
 
 <h5>- Stop the services you don&apos;t need for this project.</h5>
@@ -424,6 +432,8 @@ task for this script once a week at 4AM and every time the machine reboots.</h5>
 <p>
 &Star; create a script (in [user]/scripts/[updater_filename].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
+echo "-----------------------------------------------------------" >> /var/log/update_script.log
+date >> /var/log/update_script.log
 sudo apt-get update -y >> /var/log/update_script.log<br/>
 sudo apt-get upgrade -y >> /var/log/update_script.log<br/>
 </code><br/><br/>
@@ -449,15 +459,21 @@ root if it has been modified. Create a scheduled script task every day at midnig
 <p>
 &Star; create a script (in [user]/scripts/[cron_monitor_filename].sh):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
-DIFF=$(diff /etc/crontab.back /etc/crontab)<br/>
-cat /etc/crontab > /etc/crontab.back<br/>
-if [ "$DIFF" != "" ]; then<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab has been changed." | sudo mail -s "crontab alert" root@[host].[domain]<br/>
+DIFF=$(diff /etc/crontab.back /etc/crontab)<br>
+cat /etc/crontab > /etc/crontab.back<br>
+if [ "$DIFF" != "" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab has been changed. Diff: $DIFF" | sudo mail -s "crontab alert" root@[host].[domain]<br>
+fi<br>
+
+stat /etc/crontab > /etc/crontab.date<br>
+DIFF2=$(diff /etc/crontab.date /etc/crontab.dateback)<br>
+cp /etc/crontab.date /etc/crontab.dateback<br>
+if [ "$DIFF2" != "" ]; then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;echo "crontab mod date has changed. Diff: $DIFF2" | sudo mail -s "crontab date alert" root@[host].[domain]<br>
 fi</code><br/><br/>
+
 &Star; again add a scheduled job in crontab:<br/>
 <code class="code" style="vertical-align:middle">0 0 * * * sudo bash /home/[user]/scripts/[cron_monitor_filename].sh</code><br/><br/><br/>
-
-<p>
 Set up & test mail:<br/><br/><br/>
 
 
@@ -588,7 +604,7 @@ Redirect permanent "/" "https://[ip]/"
 <p>
 &Star; create a script in [user]/scripts/[html_updater_filename].sh that will compare files in user/temp to files in /var/www/html and update if changes have been made:<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
-DIFF=$(diff /home/[user]/temp /var/www/html)<br/>
+DIFF=$(diff -rq /home/[user]/temp /var/www/html)<br/>
 if [ "$DIFF" != "" ]; then<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;sudo cp -r /home/[user]/temp/* /var/www/html/<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;echo "html has been changed." | sudo mail -s "html updated." root@[host].[domain]<br/>
@@ -597,7 +613,7 @@ fi</code><br/><br/>
 <code class="code" style="vertical-align:middle">* * * * * sudo bash /home/[user]/scripts/[html_updater_filename].sh</code><br/><br/>
 &Star; now you can just run this script to send the new version to vm once done editing your page, and the site will be automatically updated (* * * * * = every minute):<br/>
 <code class="code" style="vertical-align:middle">#!/bin/bash<br/>
- scp -r -P [port] ~/[my html files dir] [user]@[ip]:~/temp</code><br/><br/><br/>
+ scp -r -P [port] ~/[my html files dir]/* [user]@[ip]:~/temp/</code><br/><br/><br/>
 </p>
 
 <br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
