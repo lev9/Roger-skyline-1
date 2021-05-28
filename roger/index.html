@@ -424,7 +424,21 @@ BLOCK_TCP="1"<br/>
 <h5>- Stop the services you don&apos;t need for this project.</h5>
 <p>
 &Star; display active services:<br/>
-<code class="code" style="vertical-align:middle">$ sudo systemctl list-unit-files --state=enabled</code><br/><br/>
+<code class="code" style="vertical-align:middle">$ sudo service --status-all</code><br/><br/>
+&rarr;		 apache2: the web server<br>
+&rarr;		apparmor: protects operating system and applications from threats<br>
+&rarr;		cron: needed for job schediuling<br>
+&rarr;		dbus: needed for network time synchronization<br>
+&rarr;		fail2ban: needed for protection<br>
+&rarr;		kmod: needed for kernel modules<br>
+&rarr;		networking: needed for networking<br>
+&rarr;		portsentry: needed for protection<br>
+&rarr;		postfix: used for mail<br>
+&rarr;		procps: needed for 'free', 'kill' etc.<br>
+&rarr;		rsyslog: needed for logging things<br>
+&rarr;		ssh: needed for ssh'ing<br>
+&rarr;		udev: device file system<br>
+&rarr;		ufw: the firewall<br/><br><br>
 &Star; disable the unneeded ones:<br/>
 <code class="code" style="vertical-align:middle">$ sudo systemctl disable bluetooth.service</code><br/><br/>
 <br /><br/><br/>
